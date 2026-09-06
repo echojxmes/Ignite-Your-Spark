@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iyssport — Ignite Your Spark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0b0d;
+    --ink-2:#131519;
+    --steel:#1c1f25;
+    --crimson:#d81e3f;
+    --crimson-2:#a8172f;
+    --bone:#f5f3ef;
+    --bone-dim:#9a968e;
+    --line: rgba(245,243,239,0.10);
+    --radius: 10px;
+    --header-h: clamp(64px, 9vw, 88px); /* header now scales smoothly instead of jumping at one breakpoint */
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{margin:0;font-weight:800;letter-spacing:-0.5px;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,24px);}
+  img{max-width:100%;display:block;}
+
+  /* ===== HEADER ===== */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #fff;
+    border-bottom: 1px solid #e9e9e9;
+  }
+
+nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  height: var(--header-h);
+  padding:0 35px;   /* was max-width:1180px + clamp(16px,4vw,32px) — that's what left a gap from the edge */
+  margin:0;
+}
+
+  .logo{ justify-self:start; }
+  .logo img{ height: clamp(30px, 4.5vw, 44px); width:auto; display:block; }
+
+  .navlinks{
+    justify-self:center;
+    display:flex;
+    align-items:center;
+    gap: clamp(18px, 3vw, 40px);
+    font-size: clamp(13px, 1.4vw, 15px);
+    font-weight:600;
+  }
+  .navlinks a{
+    color:#1a1a1a;
+    opacity:.88;
+    white-space:nowrap;
+    transition:opacity .2s ease, color .2s ease;
+  }
+  .navlinks a:hover{
+    opacity:1;
+    color:var(--crimson);
+  }
+
+  .navright{ justify-self:end; }
+
+  .cart-btn{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    height: clamp(36px, 5vw, 42px);
+    padding:0 clamp(12px,2vw,18px);
+    color:#fff;
+    background:#0a0b0d;
+    border:1px solid #0a0b0d;
+    border-radius:8px;
+    font-size: clamp(12.5px, 1.4vw, 14px);
+    font-weight:700;
+    transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .cart-btn:hover{
+    background:#1a1c20;
+    transform:translateY(-1px);
+    box-shadow:0 4px 14px rgba(216,30,63,.15);
+  }
+  .cart-icon{
+    width:17px; height:17px;
+    fill:none; stroke:currentColor;
+    stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+    flex-shrink:0;
+  }
+  .cart-count{
+    position:absolute;
+    top:-8px; right:-8px;
+    display:flex; align-items:center; justify-content:center;
+    min-width:20px; height:20px; padding:0 5px;
+    background:var(--crimson); color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; font-weight:700; line-height:1;
+    border:2px solid #fff;
+    border-radius:999px;
+  }
+
+  /* ===== HERO ===== */
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('assets/hero.jpeg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+}
+.hero-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.55) 100%);
+  z-index:2;
+}
+
+.hero-inner {
+  position: relative; z-index: 3;
+  width: 100%;
+  padding: 0 clamp(24px,5vw,64px) clamp(28px,6vw,42px);
+}
+
+
+.hero-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.55) 100%);
+  z-index:2;
+}
+
+.hero-inner {
+  position: relative; z-index: 3;   /* bumped from 2 so it still sits above the new blur layer */
+  width: 100%;
+  padding: 0 clamp(24px,5vw,64px) clamp(28px,6vw,42px);
+}
+  /* Team Orders card */
+  .team-card{
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    padding: clamp(10px,1.5vw,12px) clamp(12px,2vw,16px);
+    margin-bottom: clamp(12px,2vw,16px);
+    background:rgba(10,11,13,0.62);
+    border:1px solid rgba(216,30,63,0.45);
+    border-radius:12px;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    max-width:100%;
+    transition:border-color .2s ease, background .2s ease;
+  }
+  .team-card:hover{
+    border-color:var(--crimson);
+    background:rgba(10,11,13,0.78);
+  }
+  .team-icon{
+    width: clamp(32px,4vw,38px); height: clamp(32px,4vw,38px); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(216,30,63,0.18);
+    border-radius:8px;
+  }
+  .team-icon svg{
+    width:19px; height:19px;
+    fill:none; stroke:var(--crimson);
+    stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .team-label{
+    display:block;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color:var(--crimson);
+    margin-bottom:2px;
+  }
+  .team-title{
+    display:block;
+    font-size: clamp(13.5px, 1.6vw, 15px);
+    font-weight:800;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:#fff;
+    line-height:1.15;
+  }
+  .team-sub{
+    display:block;
+    font-size:11.5px;
+    color:rgba(255,255,255,0.62);
+    margin-top:2px;
+  }
+
+  /* FAQ/Reviews/Delivery/Size Chart pills */
+  .hero-links {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px,1.2vw,10px);
+    margin-bottom: clamp(14px,2vw,18px);
+    flex-wrap: wrap;
+  }
+  .hero-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: clamp(32px,4vw,36px);
+    padding: 0 clamp(12px,1.8vw,15px);
+    background: rgba(10,11,13,0.6);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    color: #fff;
+    font-size: clamp(10.5px,1.2vw,11.5px);
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition:border-color .2s ease, background .2s ease, transform .2s ease;
+  }
+  .hero-icon {
+    width: 15px; height: 15px;
+    fill: none; stroke: currentColor;
+    stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  .hero-link:hover{
+    background:rgba(0,0,0,0.75);
+    border-color:var(--crimson);
+    box-shadow:0 0 10px rgba(216,30,63,.25);
+    transform:translateY(-1px);
+  }
+
+  /* eyebrow pill */
+  .eyebrow{
+    display:inline-flex;
+    padding: clamp(6px,1vw,8px) clamp(12px,2vw,16px);
+    margin-bottom: clamp(14px,2vw,18px);
+    background:rgba(10,11,13,0.55);
+    border:1px solid rgba(216,30,63,0.55);
+    border-radius:999px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--crimson);
+  }
+
+  .hero h1 {
+    font-size: clamp(40px, 9vw, 92px);
+    line-height: 0.92;
+    letter-spacing: -2px;
+    color: #fff;
+  }
+  .hero .sub {
+    margin-top: 12px;
+    color: var(--crimson);
+    font-size: clamp(18px, 3vw, 28px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .hero p {
+    max-width: 520px;
+    margin-top: 18px;
+    color: rgba(255,255,255,0.78);
+    font-size: clamp(13.5px, 1.6vw, 15px);
+    line-height: 1.5;
+  }
+
+  .btn{
+    padding: clamp(12px,2vw,15px) clamp(20px,3vw,26px);
+    font-size:13.5px;
+    font-weight:700;
+    border-radius:10px;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary{background:var(--crimson);color:#fff;}
+  .btn-primary:hover{background:var(--crimson-2);box-shadow:0 8px 24px -8px rgb(255,1,48);transform:translateY(-1px);}
+  .btn-ghost{
+    border:1px solid rgba(255,255,255,0.28);
+    color:#fff;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+  .btn-ghost:hover{
+    border-color:rgba(255,255,255,0.5);
+    background:rgba(255,255,255,0.12);
+  }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: clamp(20px,3vw,28px);
+  }
+  .hero-ctas .btn {
+    min-height: clamp(44px,6vw,50px);
+    padding: 0 clamp(18px,2.5vw,24px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap:8px;
+    font-size: clamp(12.5px,1.4vw,13.5px);
+    font-weight: 800;
+  }
+  .bolt-icon{
+    width:14px; height:14px;
+    fill:#fff;
+  }
+
+.ball-o {
+  display: inline-flex;
+  width: 0.82em;
+  height: 0.82em;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  vertical-align: middle;
+  margin: 0 0.04em;
+  transform: translateY(0.01em);
+}
+
+.ball-o {
+  display: inline-flex;
+  width: 0.82em;
+  height: 0.82em;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  vertical-align: middle;
+  margin: 0 0.04em;
+  transform: translateY(-0.07em);
+}
+
+@media (max-width: 760px) {
+  .ball-o {
+    width: 0.95em;
+    height: 0.95em;
+    margin: 0 0.04em;
+  }
+}
+
+
+.ball-o::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(216, 30, 63, 0.35) 0%,
+    rgba(216, 30, 63, 0.15) 35%,
+    transparent 70%
+  );
+  filter: blur(5px);
+  transform: translateY(-0.05em);
+  z-index: 0;
+}
+
+.ball-o img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+  filter:
+    drop-shadow(0 2px 2px rgba(0,0,0,0.7))
+    drop-shadow(0 0 5px rgba(216,30,63,0.7));
+  transform: rotate(-90deg);
+}
+.logo img {
+  height: clamp(30px, 4.5vw, 44px);
+  width: auto;
+}
+
+.hero h1:hover .ball-o img {
+  transform: rotate(-90deg);
+  filter:
+    drop-shadow(0 3px 4px rgba(0, 0, 0, 0.8))
+    drop-shadow(0 0 12px rgba(216, 30, 63, 1));
+}
+@keyframes ballPulse {
+  0%, 100% {
+    filter:
+      drop-shadow(0 3px 3px rgba(0,0,0,0.7))
+      drop-shadow(0 0 4px rgba(216,30,63,0.5));
+  }
+
+  50% {
+    filter:
+      drop-shadow(0 3px 3px rgba(0,0,0,0.7))
+      drop-shadow(0 0 10px rgba(216,30,63,0.9));
+  }
+}
+
+.ball-o img {
+  animation: ballPulse 2.5s ease-in-out infinite;
+}
+
+  /* ===== PILLARS ===== *
+
+  /* ===== GALLERY ===== */
+  .gallery{padding: clamp(36px,6vw,60px) 0;overflow:hidden;border-bottom:1px solid var(--line);}
+  .gallery-track{display:flex;gap: clamp(10px,1.6vw,16px);width:max-content;animation:scroll 38s linear infinite;}
+  .gallery:hover .gallery-track{animation-play-state:paused;}
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .g-item{
+    width: clamp(150px, 20vw, 220px);
+    height: clamp(190px, 26vw, 280px);
+    flex-shrink:0;border-radius:var(--radius);overflow:hidden;
+    background:linear-gradient(160deg,#20242b,#101215);
+    border:1px solid var(--line);
+  }
+  .g-item img{width:100%;height:100%;object-fit:cover;display:block;}
+  @media (prefers-reduced-motion: reduce){.gallery-track{animation:none;}}
+
+  /* ===== FOOTER ===== */
+  footer{background:var(--ink-2);border-top:1px solid var(--line);padding: clamp(40px,6vw,64px) 0 28px;}
+  .foot-grid{display:grid;grid-template-columns:1.1fr 0.9fr 0.9fr;gap: clamp(28px,4vw,48px);}
+  .foot-logo{font-size:22px;font-weight:900;margin-bottom:10px;}
+  .foot-tag{font-size:13.5px;color:var(--bone-dim);line-height:1.6;max-width:280px;}
+  .foot-head{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--crimson);margin-bottom:16px;}
+  .foot-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;}
+  .foot-list li{font-size:13.5px;color:var(--bone-dim);}
+  .foot-list a:hover{color:var(--bone);}
+  .foot-about p{font-size:13.5px;color:var(--bone-dim);line-height:1.7;}
+  .foot-bottom{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);text-align:center;font-size:12px;color:var(--bone-dim);font-family:'JetBrains Mono',monospace;}
+
+  /* ===== CART DRAWER ===== */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:90;opacity:0;pointer-events:none;transition:opacity .25s;}
+  .overlay.open{opacity:1;pointer-events:auto;}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--ink-2);border-left:1px solid var(--line);z-index:100;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column;}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .drawer-head h3{font-size:20px;}
+  .close-btn{font-size:22px;line-height:1;color:var(--bone-dim);}
+  .close-btn:hover{color:var(--bone);}
+  .drawer-body{flex:1;overflow-y:auto;padding:20px 24px;}
+  .empty-cart{color:var(--bone-dim);font-size:14px;padding:40px 0;text-align:center;}
+  .cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .cart-item-art{width:56px;height:56px;flex-shrink:0;background:linear-gradient(160deg,#20242b,#101215);border:1px solid var(--line);border-radius:8px;}
+  .cart-item-info{flex:1;}
+  .cart-item-info h4{font-size:13.5px;font-weight:700;margin-bottom:2px;}
+  .cart-item-info .mono{font-size:11px;color:var(--bone-dim);}
+  .qty-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+  .qty-btn{width:22px;height:22px;border:1px solid var(--line);border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:center;}
+  .qty-btn:hover{border-color:var(--crimson);}
+  .remove-btn{font-size:11px;color:var(--bone-dim);text-decoration:underline;margin-left:auto;}
+  .remove-btn:hover{color:var(--crimson);}
+  .drawer-foot{padding:22px 24px;border-top:1px solid var(--line);}
+  .total-row{display:flex;justify-content:space-between;align-items:center;font-size:15px;margin-bottom:16px;}
+  .total-row span:last-child{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;}
+  .checkout-note{font-size:11.5px;color:var(--bone-dim);line-height:1.5;margin-top:12px;}
+  .checkout-steps{display:none;}
+  .checkout-steps.active{display:block;}
+  .order-ref{font-family:'JetBrains Mono',monospace;background:var(--steel);border:1px solid var(--line);padding:12px 14px;border-radius:8px;font-size:13px;margin:14px 0;display:flex;justify-content:space-between;}
+  .step-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:var(--crimson);border-radius:50%;font-size:11px;font-weight:800;margin-right:8px;}
+  .step-line{font-size:13.5px;line-height:1.6;color:var(--bone-dim);margin:12px 0;}
+  .back-link{font-size:12px;color:var(--bone-dim);text-decoration:underline;margin-bottom:16px;display:inline-block;}
+  .back-link:hover{color:var(--bone);}
+
+  /* ===== TABLET (768–1024px) — new tier so foot-grid & pillars don't feel cramped mid-size ===== */
+  @media (max-width: 1024px){
+    .foot-grid{grid-template-columns:1fr 1fr;}
+    .foot-grid > div:first-child{grid-column:1 / -1;}
+  }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 760px){
+    .navlinks{display:none;}
+    .hero-links{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;}
+    .hero-links::-webkit-scrollbar{display:none;}
+    .team-card{max-width:100%;}
+    .team-sub{white-space:normal;}
+    .foot-grid{grid-template-columns:1fr;}
+    .foot-grid > div:first-child{grid-column:auto;}
+    .drawer{width:100%;}
+  }
+  @media (max-width: 760px) {
+
+  .hero-inner {
+    padding: 0 12px 14px;
+  }
+
+  /* TEAM ORDERS */
+  .team-card {
+    padding: 5px 7px;
+    gap: 6px;
+    margin-bottom: 6px;
+    border-radius: 7px;
+  }
+
+  .team-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+  }
+
+  .team-icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .team-label {
+    font-size: 6px;
+    letter-spacing: 0.6px;
+  }
+
+  .team-title {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+
+  .team-sub {
+    font-size: 7.5px;
+  }
+
+  /* HERO LINKS */
+  .hero-links {
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .hero-link {
+    height: 24px;
+    padding: 0 7px;
+    gap: 3px;
+    font-size: 7px;
+  }
+
+  .hero-icon {
+    width: 9px;
+    height: 9px;
+  }
+
+  /* TITLE */
+  .hero h1 {
+    font-size: clamp(30px, 10vw, 42px);
+    line-height: 0.9;
+    letter-spacing: -0.8px;
+  }
+
+  /* BALL */
+  .ball-o {
+    width: 0.68em;
+    height: 0.68em;
+  }
+
+  /* SUBTITLE */
+  .hero .sub {
+    margin-top: 4px;
+    font-size: clamp(11px, 3.3vw, 15px);
+    letter-spacing: 0.7px;
+  }
+
+  /* DESCRIPTION */
+  .hero p {
+    max-width: 230px;
+    margin-top: 6px;
+    font-size: 9px;
+    line-height: 1.3;
+  }
+
+  /* CTA BUTTONS */
+  .hero-ctas {
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .hero-ctas .btn {
+    min-height: 32px;
+    padding: 0 9px;
+    font-size: 8.5px;
+  }
+}
+@media (max-width: 760px) {
+
+  .hero-links .hero-link > span {
+    display: none !important;
+  }
+
+  .hero-links .hero-link {
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    flex: 0 0 32px !important;
+  }
+
+  .hero-links .hero-icon {
+    width: 15px !important;
+    height: 15px !important;
+    margin: 0 !important;
+  }
+
+}
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="#home" class="logo">
+      <img src="assets/logo.png" alt="IYSSPORT">
+    </a>
+    <div class="navright">
+      <button class="cart-btn" onclick="openCart()" aria-label="Open cart">
+        <svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"/>
+          <circle cx="10" cy="20" r="1.2"/>
+          <circle cx="18" cy="20" r="1.2"/>
+        </svg>
+        <span>Cart</span>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <img class="hero-img" src="assets/hero.jpeg" alt="Down GAA player with sparks at his feet wearing Iyssport grip socks">
+  <div class="hero-scrim"></div>
+  <div class="hero-inner">
+
+    <a href="team-orders.html" class="team-card">
+      <span class="team-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 8.6 8 11 4.6-2.4 8-6 8-11V5l-8-3Z"/></svg>
+      </span>
+      <span>
+        <span class="team-label">Clubs &amp; Squads</span>
+        <span class="team-title">Team Orders</span>
+        <span class="team-sub">Custom gear — get a quote</span>
+      </span>
+    </a>
+
+    <div class="hero-links">
+      <a href="faq.html" class="hero-link">
+        <svg viewBox="0 0 24 24" class="hero-icon">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M9.8 9a2.3 2.3 0 1 1 3.8 1.7c-.9.7-1.6 1.1-1.6 2.3"></path>
+          <circle cx="12" cy="16.5" r=".6" fill="currentColor" stroke="none"></circle>
+        </svg>
+        <span>FAQ</span>
+      </a>
+
+      <a href="reviews.html" class="hero-link">
+        <svg viewBox="0 0 24 24" class="hero-icon">
+          <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3z"></path>
+        </svg>
+        <span>Reviews</span>
+      </a>
+
+      <a href="delivery.html" class="hero-link">
+        <svg viewBox="0 0 24 24" class="hero-icon">
+          <path d="M3 6h11v11H3z"></path>
+          <path d="M14 10h4l3 3v4h-7z"></path>
+          <circle cx="7" cy="18" r="2"></circle>
+          <circle cx="18" cy="18" r="2"></circle>
+        </svg>
+        <span>Delivery</span>
+      </a>
+
+      <a href="size-chart.html" class="hero-link">
+        <svg viewBox="0 0 24 24" class="hero-icon">
+          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"></path>
+          <path d="m17.5 15.5 2-2"></path>
+          <path d="m11.5 9.5 2-2"></path>
+          <path d="m14.5 12.5 2-2"></path>
+          <path d="m8.5 6.5 2-2"></path>
+        </svg>
+        <span>Size Chart</span>
+      </a>
+    </div>
+
+    <div class="eyebrow">Grip. Comfort. Drip.</div>
+   <h1>IYSSPORT</h1>
+    <div class="sub">Ignite Your Spark</div>
+    <p>Sports products engineered by professionals for sports pros.</p>
+    <div class="hero-ctas">
+      <a href="shop.html" class="btn btn-primary">
+        Shop the Range
+        <svg class="bolt-icon" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
+      </a>
+      <a href="contact.html" class="btn btn-ghost">Talk to a Pro</a>
+    </div>
+  </div>
+</section>
+
+<div class="gallery">
+  <div class="gallery-track" id="galleryTrack"></div>
+</div>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo">IYSSPORT</div>
+        <p class="foot-tag">Ignite your spark. Sports products engineered by professionals for sports pros.</p>
+      </div>
+      <div>
+        <div class="foot-head">Contact</div>
+        <ul class="foot-list">
+          <li><a href="https://wa.me/447831478378" target="_blank" rel="noopener">WhatsApp — +44 7831 478378</a></li>
+          <li><a href="https://www.tiktok.com/@official_iys" target="_blank" rel="noopener">TikTok — Ignite Your Spark ⚡</a></li>
+        </ul>
+      </div>
+      <div class="foot-about">
+        <div class="foot-head">About</div>
+        <p>Small info about Iyssport. We are a new and small sports brand that's slowly but surely rising — increasing the level of its name. Led by two young men in County Down with a huge love for the sports game. Follow our journey and order now! #igniteyourspark</p>
+      </div>
+    </div>
+    <div class="foot-bottom">© 2026 Iyssport. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- CART / CHECKOUT DRAWER -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3 id="drawerTitle">Your Cart</h3>
+    <button class="close-btn" onclick="closeCart()">&times;</button>
+  </div>
+  <div class="drawer-body" id="cartView">
+    <div id="cartItems"></div>
+  </div>
+  <div class="drawer-body checkout-steps" id="checkoutView">
+    <a class="back-link" onclick="showCart()">&larr; Back to cart</a>
+    <p class="step-line"><span class="step-num">1</span>Pay your total via Revolut. Tap the button below — it opens Revolut and you type in the amount shown.</p>
+    <div class="order-ref"><span>Order ref</span><span id="orderRef">—</span></div>
+    <a id="revolutBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary" style="display:flex;justify-content:center;width:100%;margin:14px 0;">Pay via Revolut</a>
+    <p class="step-line"><span class="step-num">2</span>After paying, send your order ref + a screenshot of the payment on WhatsApp so we can confirm and get it packed.</p>
+    <a id="whatsappBtn" href="#" target="_blank" rel="noopener" class="btn btn-ghost" style="display:flex;justify-content:center;width:100%;">Confirm on WhatsApp</a>
+    <p class="checkout-note">Card payments via Revolut are capped at £250/week — for bigger team orders, message us directly to sort payment another way.</p>
+  </div>
+  <div class="drawer-foot" id="cartFoot">
+    <div class="total-row"><span>Total</span><span id="cartTotal">£0.00</span></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="goCheckout()" id="checkoutBtn">Checkout</button>
+    <p class="checkout-note">Pay securely via Revolut, then confirm your order on WhatsApp.</p>
+  </div>
+</div>
+
+<script>
+/* ---------- CONFIG — edit before going live ---------- */
+const REVOLUT_LINK = "https://revolut.me/YOURUSERNAME"; // TODO: his real revolut.me link
+const WHATSAPP_NUMBER = "447831478378"; // digits only, no +
+
+
+
+/* the live site's gallery scrolls 10 real photos — g1..g10, swap in your own filenames */
+const GALLERY_IMAGES = ['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10'];
+
+let cart = [];
+
+function renderGallery(){
+  const items = GALLERY_IMAGES.map(name => `<div class="g-item"><img src="assets/${name}.jpeg" alt=""></div>`).join('');
+  document.getElementById('galleryTrack').innerHTML = items + items; // duplicated for the seamless scroll loop
+}
+
+function addToCart(id){
+  const existing = cart.find(i => i.id === id);
+  if(existing){ existing.qty += 1; } else { cart.push({ ...PRODUCTS.find(p => p.id === id), qty:1 }); }
+  renderCart(); openCart();
+}
+function changeQty(id, delta){
+  const item = cart.find(i => i.id === id);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0){ cart = cart.filter(i => i.id !== id); }
+  renderCart();
+}
+function removeItem(id){ cart = cart.filter(i => i.id !== id); renderCart(); }
+function cartTotal(){ return cart.reduce((sum,i) => sum + i.price * i.qty, 0); }
+
+function renderCart(){
+  const container = document.getElementById('cartItems');
+  document.getElementById('cartCount').textContent = cart.reduce((n,i)=>n+i.qty,0);
+  document.getElementById('cartTotal').textContent = '£' + cartTotal().toFixed(2);
+  const btn = document.getElementById('checkoutBtn');
+  if(cart.length === 0){
+    container.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
+    btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+    return;
+  }
+  btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+  container.innerHTML = cart.map(i => `
+    <div class="cart-item">
+      <div class="cart-item-art"></div>
+      <div class="cart-item-info">
+        <h4>${i.name}</h4>
+        <div class="mono">£${i.price.toFixed(2)}</div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changeQty('${i.id}',-1)">&minus;</button>
+          <span class="mono">${i.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${i.id}',1)">+</button>
+          <button class="remove-btn" onclick="removeItem('${i.id}')">Remove</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openCart(){ document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); showCart(); }
+function closeCart(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+function showCart(){
+  document.getElementById('drawerTitle').textContent = 'Your Cart';
+  document.getElementById('cartView').style.display = 'block';
+  document.getElementById('checkoutView').classList.remove('active');
+  document.getElementById('cartFoot').style.display = 'block';
+}
+function goCheckout(){
+  if(cart.length === 0) return;
+  const ref = 'IYS-' + Math.floor(1000 + Math.random()*9000);
+  document.getElementById('orderRef').textContent = ref;
+  document.getElementById('drawerTitle').textContent = 'Checkout';
+  document.getElementById('cartView').style.display = 'none';
+  document.getElementById('checkoutView').classList.add('active');
+  document.getElementById('cartFoot').style.display = 'none';
+  document.getElementById('revolutBtn').href = REVOLUT_LINK;
+  const lines = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
+  const msg = `Hi! Order ${ref} — ${lines} — Total £${cartTotal().toFixed(2)}. Payment sent via Revolut, screenshot attached.`;
+  document.getElementById('whatsappBtn').href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+renderGallery(); renderCart();
+</script>
+</body>
+</html>

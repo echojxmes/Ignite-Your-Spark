@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IYSSPORT — Help Center</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --ink: #0a0b0d;
+            --ink-2: #111318;
+            --steel: #1c2026;
+            --crimson: #d81e3f;
+            --crimson-dark: #a8172f;
+            --bone: #f5f3ef;
+            --bone-dim: #99958e;
+            --line: rgba(245, 243, 239, 0.1);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--ink);
+            color: var(--bone);
+            font-family: "Inter", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        .wrap {
+            width: min(1180px, calc(100% - 48px));
+            margin: 0 auto;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 82px;
+            background: #ffffff;
+            border-bottom: 1px solid #e7e7e7;
+        }
+
+        nav {
+            height: 100%;
+            padding: 0 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo img {
+            height: 42px;
+            width: auto;
+            display: block;
+        }
+
+        .cart-btn {
+            position: relative;
+            height: 42px;
+            padding: 0 17px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: #0a0b0d;
+            color: #ffffff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cart-btn:hover {
+            background: #1b1d21;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px rgba(216, 30, 63, 0.15);
+        }
+
+        .cart-icon {
+            width: 17px;
+            height: 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--crimson);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 999px;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .page {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page::before {
+            content: "";
+            position: absolute;
+            width: 650px;
+            height: 650px;
+            top: -300px;
+            right: -250px;
+            background: radial-gradient(circle, rgba(216, 30, 63, 0.15), transparent 68%);
+            pointer-events: none;
+        }
+
+        .page::after {
+            content: "";
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            top: 650px;
+            left: -300px;
+            background: radial-gradient(circle, rgba(216, 30, 63, 0.07), transparent 70%);
+            pointer-events: none;
+        }
+
+        .help-hero {
+    --hero-dim: 0.6; /* 0 = no dimming, 1 = fully black. Adjust this one number to taste. */
+    position: relative;
+    padding: 90px 0 70px;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+}
+
+.help-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 0;
+}
+
+.help-hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, var(--hero-dim));
+    z-index: 1;
+}
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 45px 45px;
+            mask-image: linear-gradient(to bottom, black, transparent);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 13px;
+            background: rgba(216, 30, 63, 0.07);
+            border: 1px solid rgba(216, 30, 63, 0.45);
+            border-radius: 999px;
+            color: var(--crimson);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .kicker-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--crimson);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--crimson);
+        }
+
+        .help-hero h1 {
+            max-width: 850px;
+            margin: 22px 0 0;
+            font-size: clamp(48px, 8vw, 92px);
+            line-height: 0.9;
+            letter-spacing: -4px;
+            font-weight: 900;
+        }
+
+        .help-hero h1 span {
+            color: var(--crimson);
+        }
+
+        .hero-description {
+            max-width: 570px;
+            margin: 25px 0 0;
+            color: var(--bone-dim);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .search-wrap {
+            position: relative;
+            max-width: 720px;
+            margin-top: 38px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            width: 18px;
+            height: 18px;
+            transform: translateY(-50%);
+            fill: none;
+            stroke: var(--bone-dim);
+            stroke-width: 2;
+            stroke-linecap: round;
+            pointer-events: none;
+        }
+
+        #faqSearch {
+            width: 100%;
+            height: 58px;
+            padding: 0 20px 0 52px;
+            background: rgba(255, 255, 255, 0.055);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 10px;
+            outline: none;
+            color: #ffffff;
+            font-size: 14px;
+            transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #faqSearch::placeholder {
+            color: #77736e;
+        }
+
+        #faqSearch:focus {
+            border-color: rgba(216, 30, 63, 0.7);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 0 3px rgba(216, 30, 63, 0.08), 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .info-col {
+            padding: 20px 18px;
+            background: var(--ink-2);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .info-col:hover {
+            transform: translateY(-3px);
+            border-color: rgba(216, 30, 63, 0.55);
+            background: #17191e;
+        }
+
+        .info-col h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .info-col span {
+            display: block;
+            margin-top: 6px;
+            color: var(--bone-dim);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .category-tab {
+            padding: 9px 16px;
+            background: var(--ink-2);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--bone-dim);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .category-tab:hover {
+            border-color: rgba(216, 30, 63, 0.4);
+            color: #ffffff;
+        }
+
+        .category-tab.active {
+            background: var(--crimson);
+            border-color: var(--crimson);
+            color: #ffffff;
+        }
+
+        .faq-section {
+            position: relative;
+            z-index: 2;
+            padding: 80px 0 100px;
+        }
+
+        .section-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .section-label {
+            color: var(--crimson);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            margin-top: 8px;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 900;
+            letter-spacing: -1.5px;
+        }
+
+        .result-count {
+            color: var(--bone-dim);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11px;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .faq-item {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(100deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.025));
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            transition: border-color 0.25s ease, background 0.25s ease;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(255, 255, 255, 0.17);
+        }
+
+        .faq-item.active {
+            background: linear-gradient(100deg, rgba(216, 30, 63, 0.075), rgba(255, 255, 255, 0.025));
+            border-color: rgba(216, 30, 63, 0.5);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16), inset 3px 0 0 var(--crimson);
+        }
+
+        .faq-question {
+            width: 100%;
+            min-height: 78px;
+            display: grid;
+            grid-template-columns: 55px 1fr 42px;
+            align-items: center;
+            padding: 0 20px;
+            background: transparent;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .faq-number {
+            color: var(--crimson);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .faq-title {
+            padding-right: 15px;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .faq-arrow {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            justify-self: end;
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            color: var(--bone-dim);
+            transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+        }
+
+        .faq-arrow svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+            background: var(--crimson);
+            border-color: var(--crimson);
+            color: #ffffff;
+        }
+
+        .faq-answer {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.35s ease;
+        }
+
+        .faq-answer-inner {
+            overflow: hidden;
+        }
+
+        .faq-answer-content {
+            padding: 0 55px 25px 75px;
+            color: var(--bone-dim);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+
+        .faq-item.active .faq-answer {
+            grid-template-rows: 1fr;
+        }
+
+        .no-results {
+            display: none;
+            padding: 60px 20px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .no-results.show {
+            display: block;
+        }
+
+        .no-results strong {
+            display: block;
+            font-size: 17px;
+        }
+
+        .no-results span {
+            display: block;
+            margin-top: 7px;
+            color: var(--bone-dim);
+            font-size: 13px;
+        }
+
+        .contact-box {
+            position: relative;
+            margin-top: 70px;
+            padding: 50px;
+            overflow: hidden;
+            background: radial-gradient(circle at 90% 20%, rgba(216, 30, 63, 0.18), transparent 40%), #111318;
+            border: 1px solid rgba(216, 30, 63, 0.3);
+            border-radius: 14px;
+        }
+
+        .contact-box::after {
+            content: "IYS";
+            position: absolute;
+            right: -15px;
+            bottom: -55px;
+            color: rgba(255, 255, 255, 0.025);
+            font-size: 170px;
+            font-weight: 900;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .contact-label {
+            color: var(--crimson);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .contact-box h2 {
+            margin: 10px 0;
+            font-size: clamp(27px, 4vw, 40px);
+            letter-spacing: -1.5px;
+        }
+
+        .contact-box p {
+            max-width: 540px;
+            margin: 0;
+            color: var(--bone-dim);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .contact-btn {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            padding: 13px 20px;
+            background: var(--crimson);
+            color: #ffffff;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 800;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            background: var(--crimson-dark);
+            box-shadow: 0 10px 28px rgba(216, 30, 63, 0.25);
+        }
+
+        footer {
+            background: var(--ink-2);
+            border-top: 1px solid var(--line);
+            padding: 55px 0 25px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr 0.9fr;
+            gap: 45px;
+        }
+
+        .footer-logo {
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .footer-tag {
+            max-width: 290px;
+            margin-top: 10px;
+            color: var(--bone-dim);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer-heading {
+            margin-bottom: 15px;
+            color: var(--crimson);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .footer-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-list li,
+        .footer-list a {
+            color: var(--bone-dim);
+            font-size: 13px;
+        }
+
+        .footer-list a:hover {
+            color: #ffffff;
+        }
+
+        .footer-bottom {
+            margin-top: 45px;
+            padding-top: 22px;
+            border-top: 1px solid var(--line);
+            color: var(--bone-dim);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.65);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(420px, 100%);
+            height: 100%;
+            z-index: 210;
+            display: flex;
+            flex-direction: column;
+            background: var(--ink-2);
+            border-left: 1px solid var(--line);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-head {
+            min-height: 75px;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .drawer-head h3 {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .close-btn {
+            width: 34px;
+            height: 34px;
+            background: transparent;
+            color: var(--bone-dim);
+            font-size: 25px;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+
+        .empty-cart {
+            padding: 50px 0;
+            color: var(--bone-dim);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 14px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-info h4 {
+            margin: 0 0 4px;
+            font-size: 13px;
+        }
+
+        .cart-price {
+            color: var(--bone-dim);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11px;
+        }
+
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 10px;
+        }
+
+        .qty-btn {
+            width: 23px;
+            height: 23px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color: #ffffff;
+        }
+
+        .qty-btn:hover {
+            border-color: var(--crimson);
+        }
+
+        .remove-btn {
+            margin-left: auto;
+            background: transparent;
+            color: var(--bone-dim);
+            font-size: 10px;
+            text-decoration: underline;
+        }
+
+        .remove-btn:hover {
+            color: var(--crimson);
+        }
+
+        .drawer-foot {
+            padding: 22px 24px;
+            border-top: 1px solid var(--line);
+        }
+
+        .total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .total-row strong {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 18px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            height: 48px;
+            background: var(--crimson);
+            color: #ffffff;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 800;
+            transition: background 0.2s ease;
+        }
+
+        .checkout-btn:hover {
+            background: var(--crimson-dark);
+        }
+
+        .checkout-note {
+            margin: 12px 0 0;
+            color: var(--bone-dim);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 760px) {
+            .wrap {
+                width: calc(100% - 28px);
+            }
+
+            header {
+                height: 64px;
+            }
+
+            nav {
+                padding: 0 14px;
+            }
+
+            .logo img {
+                height: 32px;
+            }
+
+            .cart-btn {
+                height: 36px;
+                padding: 0 11px;
+                gap: 6px;
+                font-size: 12px;
+            }
+
+            .cart-icon {
+                width: 15px;
+                height: 15px;
+            }
+
+            .help-hero {
+                padding: 58px 0 48px;
+            }
+
+            .help-hero h1 {
+                font-size: clamp(46px, 15vw, 68px);
+                letter-spacing: -3px;
+            }
+
+            .hero-description {
+                font-size: 13px;
+            }
+
+            .search-wrap {
+                margin-top: 28px;
+            }
+
+            #faqSearch {
+                height: 52px;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin-bottom: 28px;
+            }
+
+            .category-tabs {
+                gap: 6px;
+                margin-bottom: 20px;
+            }
+
+            .category-tab {
+                padding: 8px 13px;
+                font-size: 10px;
+            }
+
+            .faq-section {
+                padding: 55px 0 70px;
+            }
+
+            .section-top {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .faq-question {
+                min-height: 70px;
+                grid-template-columns: 38px 1fr 36px;
+                padding: 0 14px;
+            }
+
+            .faq-title {
+                padding-right: 8px;
+                font-size: 13px;
+            }
+
+            .faq-answer-content {
+                padding: 0 18px 22px 52px;
+                font-size: 13px;
+                line-height: 1.7;
+            }
+
+            .faq-arrow {
+                width: 30px;
+                height: 30px;
+            }
+
+            .contact-box {
+                margin-top: 50px;
+                padding: 32px 24px;
+            }
+
+            .contact-box::after {
+                font-size: 100px;
+                bottom: -25px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .help-hero h1 {
+                font-size: 45px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <img src="assets/logo.png" alt="IYSSPORT">
+            </a>
+
+            <button class="cart-btn" onclick="openCart()" aria-label="Open cart">
+                <svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"></path>
+                    <circle cx="10" cy="20" r="1.2"></circle>
+                    <circle cx="18" cy="20" r="1.2"></circle>
+                </svg>
+                <span>Cart</span>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="page">
+
+        <section class="help-hero">
+    <img class="help-hero-bg" src="assets/hero.jpeg" alt="">
+    <div class="help-hero-scrim"></div>
+    <div class="hero-grid"></div>
+
+    <div class="wrap hero-content">
+                <div class="kicker">
+                    <span class="kicker-dot"></span>
+                    IYS HELP CENTER
+                </div>
+
+                <h1>
+                    Got a question?<br>
+                    <span>We've got you.</span>
+                </h1>
+
+                <p class="hero-description">
+                    The questions we get every day — answered.
+                    Find everything you need to know about IYSSPORT,
+                    from sizing and care to team orders and sponsorships.
+                </p>
+
+                <div class="search-wrap">
+                    <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-4-4"></path>
+                    </svg>
+
+                    <input type="search" id="faqSearch" placeholder="Search the IYS help center..." autocomplete="off">
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <div class="wrap">
+
+                <div class="section-top">
+                    <div>
+                        <div class="section-label">Frequently Asked</div>
+                        <h2 class="section-title">The IYS Playbook</h2>
+                    </div>
+
+                    <div class="result-count" id="resultCount">9 / 9 QUESTIONS</div>
+                </div>
+
+                <div class="category-tabs" id="categoryTabs">
+                    <button class="category-tab active" data-category="all" type="button">All</button>
+                    <button class="category-tab" data-category="sizing" type="button">Sizing &amp; Fit</button>
+                    <button class="category-tab" data-category="care" type="button">Care &amp; Maintenance</button>
+                    <button class="category-tab" data-category="orders" type="button">Orders &amp; Delivery</button>
+                    <button class="category-tab" data-category="sponsorship" type="button">Sponsorship &amp; Teams</button>
+                </div>
+
+                <div class="faq-list" id="faqList">
+
+                    <article class="faq-item" data-category="sizing" data-question="Are your grip socks suitable for all sports?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">01</span>
+                            <span class="faq-title">Are your grip socks suitable for all sports?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            Yes — they're engineered for GAA, football, rugby and any sport where you need lock-in and explosive cuts.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="care" data-question="How much should the GAA balls be pumped up?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">02</span>
+                            <span class="faq-title">How much should the GAA balls be pumped up?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            Pump your GAA ball to around 0.6–0.7 bar (9–10 psi). Check it before every session — a properly inflated ball feels firm but still has a slight give when pressed.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="sizing" data-question="What sizes do the gloves come in?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">03</span>
+                            <span class="faq-title">What sizes do the gloves come in?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            GK and Gaelic gloves run from junior 5 up to senior 11. Check the size chart for the exact measurements.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="care" data-question="How do I wash my grip socks?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">04</span>
+                            <span class="faq-title">How do I wash my grip socks?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            Cold machine wash inside out, no fabric softener, air dry. Keeps the silicone pods sticky for longer.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="care" data-question="How do I wash my GAA goalie gloves?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">05</span>
+                            <span class="faq-title">How do I wash my GAA / goalie gloves?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            Hand wash in lukewarm water (max 30°C) with a tiny bit of mild soap. Lightly rub the palm — don't scrub. Rinse well, press out the water with a towel (no wringing) and air dry away from direct heat or sunlight. Damp the palm slightly before play for max grip.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="sponsorship" data-question="Can I get a sponsorship?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">06</span>
+                            <span class="faq-title">Can I get a sponsorship?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            We're always on the lookout for hungry players and clubs to rep Iyssport. Send us a DM on Instagram (@iyssport) or TikTok (@official_iys) with your position, level, socials and a short bit about you — we'll be in touch.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="sponsorship" data-question="Do you do team orders or bulk discounts?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">07</span>
+                            <span class="faq-title">Do you do team orders or bulk discounts?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            Yes — head to the Team Orders page and fill out the form. We'll get back to you with a custom quote.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="sizing" data-question="How do I know my size?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">08</span>
+                            <span class="faq-title">How do I know my size?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            Check the Size Chart page — full measurements for every product, gloves to socks.
+                        </div></div></div>
+                    </article>
+
+                    <article class="faq-item" data-category="orders" data-question="What happens if my product comes damaged?">
+                        <button class="faq-question" type="button">
+                            <span class="faq-number">09</span>
+                            <span class="faq-title">What happens if my product comes damaged?</span>
+                            <span class="faq-arrow"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></span>
+                        </button>
+                        <div class="faq-answer"><div class="faq-answer-inner"><div class="faq-answer-content">
+                            It will get replaced with a new and good one — just message our TikTok page (@official_iys) and we'll sort you out.
+                        </div></div></div>
+                    </article>
+
+                </div>
+
+                <div class="no-results" id="noResults">
+                    <strong>No answers found.</strong>
+                    <span>Try a different search.</span>
+                </div>
+
+                <div class="contact-box">
+                    <div class="contact-label">STILL NEED HELP?</div>
+                    <h2>Talk to a Pro.</h2>
+                    <p>Can't find what you're looking for? Get in touch and we'll help you out.</p>
+
+                    <a href="contact.html" class="contact-btn">
+                        Talk to a Pro
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"></path>
+                            <path d="m13 6 6 6-6 6"></path>
+                        </svg>
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="wrap">
+
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">IYSSPORT</div>
+                    <p class="footer-tag">Ignite your spark. Sports products engineered by professionals for sports pros.</p>
+                </div>
+
+                <div>
+                    <div class="footer-heading">Contact</div>
+                    <ul class="footer-list">
+                        <li><a href="https://wa.me/447831478378" target="_blank" rel="noopener">WhatsApp — +44 7831 478378</a></li>
+                        <li><a href="https://www.tiktok.com/@iyssport" target="_blank" rel="noopener">TikTok — Ignite Your Spark ⚡ </a></li>
+                        <li><a href="https://www.instagram.com/iyssport" target="_blank" rel="noopener">Instagram — Ignite Your Spark ⚡ </a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="footer-heading">Help</div>
+                    <ul class="footer-list">
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="delivery.html">Delivery</a></li>
+                        <li><a href="size-chart.html">Size Chart</a></li>
+                        <li><a href="team-orders.html">Team Orders</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">© 2026 Iyssport. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <div class="overlay" id="overlay" onclick="closeCart()"></div>
+
+    <aside class="drawer" id="drawer">
+        <div class="drawer-head">
+            <h3>Your Cart</h3>
+            <button class="close-btn" onclick="closeCart()" aria-label="Close cart">&times;</button>
+        </div>
+
+        <div class="drawer-body" id="cartItems">
+            <div class="empty-cart">Your cart is empty.</div>
+        </div>
+
+        <div class="drawer-foot">
+            <div class="total-row">
+                <span>Total</span>
+                <strong id="cartTotal">£0.00</strong>
+            </div>
+
+            <button class="checkout-btn" id="checkoutBtn" onclick="goCheckout()">Checkout</button>
+            <p class="checkout-note">Pay securely via Revolut, then confirm your order on WhatsApp.</p>
+        </div>
+    </aside>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const faqItems = document.querySelectorAll(".faq-item");
+
+            faqItems.forEach((item) => {
+                const button = item.querySelector(".faq-question");
+                if (!button) return;
+
+                button.addEventListener("click", () => {
+                    const wasOpen = item.classList.contains("active");
+                    faqItems.forEach((otherItem) => otherItem.classList.remove("active"));
+                    if (!wasOpen) item.classList.add("active");
+                });
+            });
+
+            const searchInput = document.getElementById("faqSearch");
+            const resultCount = document.getElementById("resultCount");
+            const noResults = document.getElementById("noResults");
+            const categoryTabs = document.querySelectorAll(".category-tab");
+
+            let activeCategory = "all";
+
+            if (searchInput && resultCount && noResults) {
+                function updateFAQSearch() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    let visibleCount = 0;
+
+                    faqItems.forEach((item) => {
+                        const question = (item.dataset.question || "").toLowerCase();
+                        const answerEl = item.querySelector(".faq-answer-content");
+                        const answer = answerEl ? answerEl.textContent.toLowerCase() : "";
+
+                        const categoryMatches =
+                            activeCategory === "all" || item.dataset.category === activeCategory;
+
+                        const searchMatches =
+                            searchTerm === "" ||
+                            question.includes(searchTerm) ||
+                            answer.includes(searchTerm);
+
+                        const matches = categoryMatches && searchMatches;
+
+                        item.style.display = matches ? "" : "none";
+                        if (!matches) item.classList.remove("active");
+                        if (matches) visibleCount++;
+                    });
+
+                    resultCount.textContent = `${visibleCount} / ${faqItems.length} QUESTIONS`;
+                    noResults.classList.toggle("show", visibleCount === 0);
+                }
+
+                searchInput.addEventListener("input", updateFAQSearch);
+                searchInput.addEventListener("keyup", updateFAQSearch);
+
+                categoryTabs.forEach((tab) => {
+                    tab.addEventListener("click", () => {
+                        categoryTabs.forEach((t) => t.classList.remove("active"));
+                        tab.classList.add("active");
+                        activeCategory = tab.dataset.category;
+                        updateFAQSearch();
+                    });
+                });
+
+                updateFAQSearch();
+            }
+
+            let cart = JSON.parse(localStorage.getItem("iys_cart") || "[]");
+
+            function saveCart() {
+                localStorage.setItem("iys_cart", JSON.stringify(cart));
+            }
+
+            window.openCart = function () {
+                document.getElementById("drawer").classList.add("open");
+                document.getElementById("overlay").classList.add("open");
+                renderCart();
+            };
+
+            window.closeCart = function () {
+                document.getElementById("drawer").classList.remove("open");
+                document.getElementById("overlay").classList.remove("open");
+            };
+
+            window.changeQty = function (id, amount) {
+                const item = cart.find((product) => product.id === id);
+                if (!item) return;
+
+                item.qty += amount;
+                if (item.qty <= 0) {
+                    cart = cart.filter((product) => product.id !== id);
+                }
+
+                saveCart();
+                renderCart();
+            };
+
+            window.removeItem = function (id) {
+                cart = cart.filter((product) => product.id !== id);
+                saveCart();
+                renderCart();
+            };
+
+            function getCartTotal() {
+                return cart.reduce((total, item) => total + item.price * item.qty, 0);
+            }
+
+            function renderCart() {
+                const container = document.getElementById("cartItems");
+                const count = cart.reduce((total, item) => total + item.qty, 0);
+
+                document.getElementById("cartCount").textContent = count;
+                document.getElementById("cartTotal").textContent = "£" + getCartTotal().toFixed(2);
+
+                if (cart.length === 0) {
+                    container.innerHTML = `<div class="empty-cart">Your cart is empty.</div>`;
+                    return;
+                }
+
+                container.innerHTML = cart.map((item) => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <div class="cart-price">£${item.price.toFixed(2)}</div>
+                            <div class="qty-row">
+                                <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                                <span>${item.qty}</span>
+                                <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+                                <button class="remove-btn" onclick="removeItem('${item.id}')">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            window.goCheckout = function () {
+                if (cart.length === 0) return;
+                window.location.href = "shop.html";
+            };
+
+            renderCart();
+        });
+    </script>
+
+</body>
+</html>
