@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment — Iyssport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --ink:#0a0a0a; --ink-2:#141414; --steel:#1f1f1f;
+    --crimson:#d81e3f; --crimson-2:#a8172f;
+    --bone:#f5f3ef; --bone-dim:#9a968e;
+    --line: rgba(245,243,239,0.10); --radius:10px;
+    --header-h: clamp(64px, 9vw, 88px);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{margin:0;font-weight:800;letter-spacing:-0.5px;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,24px);}
+
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes popIn{0%{opacity:0;transform:scale(.8);}100%{opacity:1;transform:scale(1);}}
+
+  header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e9e9e9;}
+  nav{display:flex;align-items:center;justify-content:space-between;width:100%;height:var(--header-h);padding:0 16px;}
+  .logo img{height:clamp(30px,4.5vw,44px);width:auto;display:block;}
+  .cart-btn{position:relative;display:flex;align-items:center;gap:9px;height:clamp(36px,5vw,42px);padding:0 clamp(12px,2vw,18px);color:#fff;background:#0a0b0d;border:1px solid #0a0b0d;border-radius:8px;font-size:clamp(12.5px,1.4vw,14px);font-weight:700;transition:background .2s ease,transform .2s ease;}
+  .cart-btn:hover{background:#1a1c20;transform:translateY(-1px);}
+  .cart-icon{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+  .cart-count{position:absolute;top:-8px;right:-8px;display:flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;background:var(--crimson);color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;border:2px solid #fff;border-radius:999px;}
+
+  .pay-page{max-width:580px;margin:0 auto;padding:clamp(40px,6vw,70px) clamp(16px,4vw,24px) 90px;}
+  .pay-head{text-align:center;margin-bottom:28px;animation:fadeInUp .4s ease both;}
+  .pay-head h1{font-size:clamp(26px,4vw,34px);}
+  .pay-head p{color:var(--bone-dim);font-size:13.5px;margin-top:8px;}
+
+  .card{background:var(--steel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:20px;animation:fadeInUp .4s ease .05s both;}
+  .card h3{font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:var(--crimson);margin-bottom:16px;}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:11.5px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--bone-dim);margin-bottom:7px;}
+  .field .optional{text-transform:none;font-weight:500;color:var(--bone-dim);opacity:.7;}
+  .field input,.field textarea{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:8px;color:var(--bone);padding:12px 13px;font-size:14px;font-family:inherit;transition:border-color .15s ease;}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--crimson);}
+  .field textarea{resize:vertical;min-height:60px;}
+  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .row-3{display:grid;grid-template-columns:2fr 1fr;gap:14px;}
+
+  .delivery-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .delivery-opt{position:relative;}
+  .delivery-opt input{position:absolute;opacity:0;}
+  .delivery-opt label{display:block;border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;transition:border-color .15s ease,background .15s ease;text-transform:none;font-size:13px;font-weight:600;color:var(--bone);}
+  .delivery-opt label .sub{display:block;font-size:11px;font-weight:400;color:var(--bone-dim);margin-top:3px;text-transform:none;}
+  .delivery-opt input:checked + label{border-color:var(--crimson);background:rgba(216,30,63,0.08);}
+
+  .order-ref{font-family:'JetBrains Mono',monospace;background:var(--ink);border:1px solid var(--line);padding:12px 14px;border-radius:8px;font-size:13px;display:flex;justify-content:space-between;margin-bottom:16px;}
+  .line-item{display:flex;justify-content:space-between;font-size:13.5px;padding:8px 0;border-bottom:1px solid var(--line);color:var(--bone-dim);}
+  .line-item:last-of-type{border-bottom:none;}
+  .line-item span:first-child{color:var(--bone);}
+  .total-row{display:flex;justify-content:space-between;align-items:center;font-size:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .total-row span:last-child{font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:700;color:var(--crimson);}
+
+  .note{background:rgba(216,30,63,0.1);border:1px solid rgba(216,30,63,0.35);border-radius:8px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:var(--bone);margin-bottom:18px;}
+  .note b{color:var(--crimson);}
+  .error-msg{background:rgba(216,30,63,0.1);border:1px solid rgba(216,30,63,0.35);border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--bone);margin-bottom:16px;display:none;}
+  .error-msg.show{display:block;}
+
+  .step{display:flex;gap:12px;margin-bottom:16px;}
+  .step-num{flex-shrink:0;width:26px;height:26px;background:var(--crimson);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;transition:background .2s ease;}
+  .step-num.done{background:#2fae5c;}
+  .step p{font-size:13.5px;line-height:1.6;color:var(--bone-dim);margin:0;}
+  .step p b{color:var(--bone);}
+
+  .btn{display:flex;align-items:center;justify-content:center;width:100%;padding:16px;border-radius:10px;font-weight:800;font-size:14px;margin-top:8px;transition:background .15s ease,transform .15s ease,opacity .2s ease;}
+  .btn-primary{background:var(--crimson);color:#fff;}
+  .btn-primary:hover{background:var(--crimson-2);}
+  .btn-primary:active{transform:scale(.97);}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--bone);}
+  .btn-ghost:hover{border-color:var(--crimson);}
+  .btn:disabled{opacity:.5;pointer-events:none;}
+
+  .empty-note{text-align:center;color:var(--bone-dim);font-size:14px;padding:40px 0;}
+  .back-link{display:inline-block;margin-top:18px;font-size:12.5px;color:var(--bone-dim);text-decoration:underline;}
+  .back-link:hover{color:var(--bone);}
+
+  .view{display:none;}
+  .view.show{display:block;}
+
+  .confirm-screen{text-align:center;}
+  .confirm-icon{width:64px;height:64px;margin:0 auto 18px;background:rgba(47,174,92,0.15);border:1px solid rgba(47,174,92,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:popIn .4s cubic-bezier(.2,.9,.3,1.3) both;}
+  .confirm-icon svg{width:28px;height:28px;stroke:#2fae5c;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+  .confirm-screen h1{font-size:clamp(24px,4vw,30px);}
+  .confirm-screen p{color:var(--bone-dim);font-size:13.5px;margin-top:10px;line-height:1.6;}
+  .confirm-ref{font-family:'JetBrains Mono',monospace;font-size:15px;background:var(--steel);border:1px solid var(--line);display:inline-block;padding:8px 16px;border-radius:999px;margin-top:14px;}
+
+  @media (max-width:500px){ .row-2,.row-3,.delivery-options{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a href="index.html" class="logo"><img src="assets/logo.png" alt="IYSSPORT"></a>
+    <button class="cart-btn" onclick="window.location.href='shop.html'" aria-label="View cart">
+      <svg class="cart-icon" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"/><circle cx="10" cy="20" r="1.2"/><circle cx="18" cy="20" r="1.2"/></svg>
+      <span>Cart</span><span class="cart-count" id="cartCount">0</span>
+    </button>
+  </nav>
+</header>
+
+<div class="pay-page" id="payPage">
+
+  <!-- STEP 1: CUSTOMER DETAILS -->
+  <div class="view show" id="detailsView">
+    <div class="pay-head">
+      <h1>Your Details</h1>
+      <p>So we know where it's going and can keep you posted.</p>
+    </div>
+
+    <div class="card">
+      <div id="cartSummary"></div>
+      <div class="total-row"><span>Total</span><span id="detailsTotal">£0.00</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Contact</h3>
+      <div class="error-msg" id="detailsError"></div>
+      <form id="detailsForm">
+        <div class="row-2">
+          <div class="field">
+            <label for="custName">Full Name</label>
+            <input type="text" id="custName" required maxlength="200">
+          </div>
+          <div class="field">
+            <label for="custPhone">Phone</label>
+            <input type="tel" id="custPhone" required maxlength="30">
+          </div>
+        </div>
+        <div class="field">
+          <label for="custEmail">Email</label>
+          <input type="email" id="custEmail" required maxlength="200">
+        </div>
+
+        <h3 style="margin-top:22px;">Delivery</h3>
+        <div class="delivery-options">
+          <div class="delivery-opt">
+            <input type="radio" id="delPost" name="delivery" value="post" checked>
+            <label for="delPost">Post<span class="sub">Delivered to your address</span></label>
+          </div>
+          <div class="delivery-opt">
+            <input type="radio" id="delCollection" name="delivery" value="collection">
+            <label for="delCollection">Local Pickup<span class="sub">County Down — arrange via WhatsApp</span></label>
+          </div>
+        </div>
+
+        <div id="addressFields">
+          <div class="field">
+            <label for="addr1">Address Line 1</label>
+            <input type="text" id="addr1" maxlength="200" placeholder="House/flat number and street">
+          </div>
+          <div class="field">
+            <label for="addr2">Address Line 2 <span class="optional">(optional)</span></label>
+            <input type="text" id="addr2" maxlength="200">
+          </div>
+          <div class="row-3">
+            <div class="field">
+              <label for="city">Town / City</label>
+              <input type="text" id="city" maxlength="100">
+            </div>
+            <div class="field">
+              <label for="postcode">Postcode</label>
+              <input type="text" id="postcode" maxlength="15" style="text-transform:uppercase;">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="orderNotes">Order Notes <span class="optional">(optional)</span></label>
+          <textarea id="orderNotes" maxlength="500" placeholder="Sizing requests, gift message, anything we should know"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="detailsBtn">Continue to Payment</button>
+      </form>
+    </div>
+
+    <a href="shop.html" class="back-link">&larr; Back to shop</a>
+  </div>
+
+  <!-- STEP 2: PAYMENT -->
+  <div class="view" id="mainView">
+    <div class="pay-head">
+      <h1>Complete Your Payment</h1>
+      <p>Pay securely via Revolut, then confirm on WhatsApp.</p>
+    </div>
+
+    <div class="card">
+      <div class="order-ref"><span>Order ref</span><span id="orderRef">—</span></div>
+      <div id="lineItems"></div>
+      <div class="total-row"><span>Total</span><span id="totalAmount">£0.00</span></div>
+    </div>
+
+    <div class="card">
+      <div class="note"><b>Important:</b> add your order ref (shown above) to the <b>payment note/reference field</b> in Revolut — not just the WhatsApp message. This is how we match your payment to your order.</div>
+
+      <div class="step">
+        <div class="step-num" id="stepNum1">1</div>
+        <p>Tap <b>Pay via Revolut</b> below — it opens Revolut where you type in the exact amount shown above, add your order ref as the payment note, and send it.</p>
+      </div>
+      <div class="step">
+        <div class="step-num" id="stepNum2">2</div>
+        <p>Screenshot the completed payment, then tap <b>Confirm on WhatsApp</b> and send it with your order ref so we can pack your order.</p>
+      </div>
+
+      <a id="revolutBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary" onclick="markDone('revolut')">Pay via Revolut</a>
+      <a id="whatsappBtn" href="#" target="_blank" rel="noopener" class="btn btn-ghost" onclick="markDone('whatsapp')">Confirm on WhatsApp</a>
+
+      <button class="btn btn-primary" id="confirmBtn" disabled onclick="showConfirmation()">I've completed both steps</button>
+    </div>
+
+    <a href="shop.html" class="back-link">&larr; Back to shop</a>
+  </div>
+
+  <!-- STEP 3: CONFIRMATION -->
+  <div class="view confirm-screen" id="confirmScreen">
+    <div class="confirm-icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+    <h1>Order Received</h1>
+    <p>Thanks! We've got your order flagged and will confirm once your payment comes through.<br>Hang on to your order ref in case we need to reach you about it.</p>
+    <div class="confirm-ref" id="confirmRef">—</div>
+    <br><br>
+    <a href="shop.html" class="btn btn-ghost" style="display:inline-flex;width:auto;padding:14px 28px;margin:0 auto;">Continue Shopping</a>
+  </div>
+
+</div>
+
+<script>
+  const supabaseClient = window.supabase.createClient(
+    'https://vtqprbyrfqxehfqfexcn.supabase.co',
+    'sb_publishable_4qxfyeGxdEvQwhnknzesmw_r7XmUNY_'
+  );
+
+  const REVOLUT_LINK = "https://revolut.me/YOURUSERNAME"; // TODO: his real personal revolut.me link
+  const WHATSAPP_NUMBER = "447831478378"; // digits only, no +
+
+  function getCart(){ try{ return JSON.parse(localStorage.getItem('iys_cart')) || []; }catch(e){ return []; } }
+  function clearCart(){ localStorage.removeItem('iys_cart'); localStorage.removeItem('iys_pending_ref'); }
+
+  const cart = getCart();
+  document.getElementById('cartCount').textContent = cart.reduce((n,i)=>n+i.qty,0);
+
+  let ref = null;
+  let clicked = { revolut:false, whatsapp:false };
+
+  function showView(id){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('show'));
+    document.getElementById(id).classList.add('show');
+  }
+
+  // Toggle address fields depending on delivery method — collection doesn't need a postal address
+  document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const isCollection = document.getElementById('delCollection').checked;
+      document.getElementById('addressFields').style.display = isCollection ? 'none' : 'block';
+      document.getElementById('addr1').required = !isCollection;
+      document.getElementById('city').required = !isCollection;
+      document.getElementById('postcode').required = !isCollection;
+    });
+  });
+
+  if(cart.length === 0){
+    document.getElementById('payPage').innerHTML =
+      '<div class="pay-head"><h1>Nothing to pay</h1></div><div class="card"><p class="empty-note">Your cart is empty — add something from the shop first.</p></div><a href="shop.html" class="back-link">&larr; Back to shop</a>';
+  } else {
+    const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+
+    document.getElementById('detailsTotal').textContent = '£' + total.toFixed(2);
+    document.getElementById('cartSummary').innerHTML = cart.map(i =>
+      `<div class="line-item"><span>${i.qty}× ${i.name}</span><span>£${(i.price*i.qty).toFixed(2)}</span></div>`
+    ).join('');
+
+    document.getElementById('detailsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('detailsBtn');
+      const errorBox = document.getElementById('detailsError');
+      errorBox.classList.remove('show');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      ref = 'IYS-' + Math.floor(1000 + Math.random()*9000);
+      const deliveryMethod = document.querySelector('input[name="delivery"]:checked').value;
+
+      const payload = {
+        order_ref: ref,
+        items: cart,
+        total: total,
+        status: 'pending',
+        customer_name: document.getElementById('custName').value.trim(),
+        customer_email: document.getElementById('custEmail').value.trim(),
+        customer_phone: document.getElementById('custPhone').value.trim(),
+        delivery_method: deliveryMethod,
+        order_notes: document.getElementById('orderNotes').value.trim() || null,
+        address_line1: deliveryMethod === 'post' ? document.getElementById('addr1').value.trim() : 'N/A — local pickup',
+        address_line2: deliveryMethod === 'post' ? (document.getElementById('addr2').value.trim() || null) : null,
+        city: deliveryMethod === 'post' ? document.getElementById('city').value.trim() : 'N/A',
+        postcode: deliveryMethod === 'post' ? document.getElementById('postcode').value.trim().toUpperCase() : 'N/A'
+      };
+
+      const { error } = await supabaseClient.from('orders').insert(payload);
+
+      btn.disabled = false; btn.textContent = 'Continue to Payment';
+
+      if(error){
+        console.error('Failed to save order:', error);
+        errorBox.textContent = 'Something went wrong saving your details — please check everything is filled in and try again.';
+        errorBox.classList.add('show');
+        return;
+      }
+
+      localStorage.setItem('iys_pending_ref', ref);
+
+      document.getElementById('orderRef').textContent = ref;
+      document.getElementById('totalAmount').textContent = '£' + total.toFixed(2);
+      document.getElementById('lineItems').innerHTML = cart.map(i =>
+        `<div class="line-item"><span>${i.qty}× ${i.name}</span><span>£${(i.price*i.qty).toFixed(2)}</span></div>`
+      ).join('');
+      document.getElementById('revolutBtn').href = REVOLUT_LINK;
+      const lines = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
+      const msg = `Hi! Order ${ref} — ${lines} — Total £${total.toFixed(2)}. Payment sent via Revolut (ref in payment note), screenshot attached.`;
+      document.getElementById('whatsappBtn').href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+      showView('mainView');
+    });
+  }
+
+  function markDone(which){
+    clicked[which] = true;
+    if(which==='revolut') document.getElementById('stepNum1').classList.add('done');
+    if(which==='whatsapp') document.getElementById('stepNum2').classList.add('done');
+    if(clicked.revolut && clicked.whatsapp){
+      document.getElementById('confirmBtn').disabled = false;
+    }
+  }
+
+  function showConfirmation(){
+    document.getElementById('confirmRef').textContent = ref;
+    showView('confirmScreen');
+    clearCart();
+    document.getElementById('cartCount').textContent = '0';
+  }
+</script>
+</body>
+</html>

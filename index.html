@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --ink:#0a0b0d;
@@ -128,7 +129,7 @@ nav{
   inset: 0;
   width: 100%;
   height: 100%;
-  background-image: url('assets/hero.jpeg');
+  background-image: url('assets/hero.jpg');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% 100%;
@@ -641,7 +642,7 @@ nav{
 </header>
 
 <section class="hero" id="home">
-  <img class="hero-img" src="assets/hero.jpeg" alt="Down GAA player with sparks at his feet wearing Iyssport grip socks">
+  <img class="hero-img" src="assets/hero.jpg" alt="Down GAA player with sparks at his feet wearing Iyssport grip socks">
   <div class="hero-scrim"></div>
   <div class="hero-inner">
 
@@ -775,7 +776,7 @@ const GALLERY_IMAGES = ['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10'];
 let cart = [];
 
 function renderGallery(){
-  const items = GALLERY_IMAGES.map(name => `<div class="g-item"><img src="assets/${name}.jpeg" alt=""></div>`).join('');
+  const items = GALLERY_IMAGES.map(name => `<div class="g-item"><img src="assets/${name}.jpg" alt=""></div>`).join('');
   document.getElementById('galleryTrack').innerHTML = items + items; // duplicated for the seamless scroll loop
 }
 

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Iyssport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --ink:#0a0a0a; --ink-2:#141414; --steel:#1f1f1f;
+    --crimson:#d81e3f; --crimson-2:#a8172f;
+    --bone:#f5f3ef; --bone-dim:#9a968e;
+    --line: rgba(245,243,239,0.10); --radius:10px;
+    --green:#2fae5c; --amber:#d8941e;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ink);color:var(--bone);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{margin:0;font-weight:800;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 clamp(16px,4vw,24px);}
+
+  /* LOGIN */
+  .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .login-card{width:100%;max-width:380px;background:var(--steel);border:1px solid var(--line);border-radius:var(--radius);padding:32px;}
+  .login-card h1{font-size:22px;margin-bottom:6px;}
+  .login-card p{font-size:13px;color:var(--bone-dim);margin-bottom:24px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:11.5px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--crimson);margin-bottom:7px;}
+  .field input{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:8px;color:var(--bone);padding:12px 13px;font-size:14px;font-family:inherit;}
+  .field input:focus{outline:none;border-color:var(--crimson);}
+  .btn{width:100%;padding:13px;border-radius:8px;background:var(--crimson);color:#fff;font-weight:800;font-size:14px;margin-top:6px;}
+  .btn:hover{background:var(--crimson-2);}
+  .btn:disabled{opacity:.5;pointer-events:none;}
+  .login-error{background:rgba(216,30,63,0.1);border:1px solid rgba(216,30,63,0.35);border-radius:8px;padding:10px 12px;font-size:12.5px;margin-bottom:16px;display:none;}
+  .login-error.show{display:block;}
+
+  /* DASHBOARD */
+  .dash{display:none;}
+  .dash.show{display:block;}
+  .dash-header{padding:24px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .dash-header h1{font-size:24px;}
+  .logout-btn{font-size:12.5px;color:var(--bone-dim);text-decoration:underline;}
+  .logout-btn:hover{color:var(--bone);}
+
+  .toolbar{display:flex;gap:10px;align-items:center;margin:20px 0;flex-wrap:wrap;}
+  .status-tabs{display:flex;gap:6px;background:var(--steel);border:1px solid var(--line);border-radius:999px;padding:4px;}
+  .status-tab{padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;color:var(--bone-dim);}
+  .status-tab.active{background:var(--crimson);color:#fff;}
+  .search-input{background:var(--steel);border:1px solid var(--line);border-radius:8px;color:var(--bone);padding:8px 12px;font-size:13px;margin-left:auto;min-width:200px;}
+  .search-input:focus{outline:none;border-color:var(--crimson);}
+
+  .order-list{display:flex;flex-direction:column;gap:12px;padding-bottom:60px;}
+  .order-card{background:var(--steel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;}
+  .order-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  .order-ref{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;}
+  .order-date{font-size:11.5px;color:var(--bone-dim);margin-top:2px;}
+  .order-total{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--crimson);}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;}
+  .badge.pending{background:rgba(216,148,30,0.15);color:var(--amber);border:1px solid rgba(216,148,30,0.4);}
+  .badge.awaiting_confirmation{background:rgba(216,30,63,0.15);color:var(--crimson);border:1px solid rgba(216,30,63,0.4);}
+  .badge.paid{background:rgba(47,174,92,0.15);color:var(--green);border:1px solid rgba(47,174,92,0.4);}
+  .badge.fulfilled{background:rgba(154,150,142,0.15);color:var(--bone-dim);border:1px solid var(--line);}
+  .badge.cancelled{background:rgba(154,150,142,0.1);color:var(--bone-dim);border:1px solid var(--line);text-decoration:line-through;}
+
+  .order-items{margin-top:12px;font-size:13px;color:var(--bone-dim);}
+  .order-items div{padding:4px 0;}
+  .order-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .action-btn{font-size:11.5px;font-weight:700;border:1px solid var(--line);padding:7px 13px;border-radius:999px;}
+  .action-btn:hover{border-color:var(--crimson);}
+  .action-btn.active-state{background:var(--crimson);border-color:var(--crimson);color:#fff;}
+
+  .empty{text-align:center;color:var(--bone-dim);font-size:14px;padding:60px 20px;}
+  .loading{text-align:center;color:var(--bone-dim);font-size:13px;padding:40px 20px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h1>Admin Login</h1>
+    <p>IYSSPORT order management</p>
+    <div class="login-error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn" id="loginBtn">Log In</button>
+    </form>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dash" id="dash">
+  <div class="wrap">
+    <div class="dash-header">
+      <h1>Orders</h1>
+      <button class="logout-btn" onclick="logout()">Log out</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="status-tabs" id="statusTabs">
+  <button class="status-tab active" data-status="all">All</button>
+  <button class="status-tab" data-status="pending">Pending</button>
+  <button class="status-tab" data-status="awaiting_confirmation">Awaiting Confirmation</button>
+  <button class="status-tab" data-status="paid">Paid</button>
+  <button class="status-tab" data-status="fulfilled">Fulfilled</button>
+  <button class="status-tab" data-status="cancelled">Cancelled</button>
+</div>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search order ref...">
+    </div>
+
+    <div class="order-list" id="orderList">
+      <div class="loading">Loading orders...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const supabaseClient = window.supabase.createClient(
+    'https://vtqprbyrfqxehfqfexcn.supabase.co',
+    'sb_publishable_4qxfyeGxdEvQwhnknzesmw_r7XmUNY_'
+  );
+
+  let allOrders = [];
+  let currentStatusFilter = 'all';
+
+  /* ---------- AUTH ---------- */
+  async function checkSession(){
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if(session){ showDashboard(); } else { showLogin(); }
+  }
+
+  function showLogin(){
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('dash').classList.remove('show');
+  }
+  function showDashboard(){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dash').classList.add('show');
+    loadOrders();
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    const errorBox = document.getElementById('loginError');
+    errorBox.classList.remove('show');
+    btn.disabled = true; btn.textContent = 'Logging in...';
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email: document.getElementById('email').value.trim(),
+      password: document.getElementById('password').value
+    });
+
+    btn.disabled = false; btn.textContent = 'Log In';
+
+    if(error){
+      errorBox.textContent = 'Incorrect email or password.';
+      errorBox.classList.add('show');
+      return;
+    }
+    showDashboard();
+  });
+
+  async function logout(){
+    await supabaseClient.auth.signOut();
+    showLogin();
+  }
+
+  /* ---------- ORDERS ---------- */
+  async function loadOrders(){
+    const { data, error } = await supabaseClient
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if(error){
+      document.getElementById('orderList').innerHTML = '<div class="empty">Failed to load orders — try refreshing.</div>';
+      console.error(error);
+      return;
+    }
+
+    allOrders = data;
+    renderOrders();
+  }
+
+  function renderOrders(){
+    const search = document.getElementById('searchInput').value.trim().toLowerCase();
+    let filtered = allOrders.filter(o => {
+  const matchesSearch = search === '' || o.order_ref.toLowerCase().includes(search);
+  if(currentStatusFilter === 'all'){
+    return o.status !== 'cancelled' && matchesSearch;   // "All" now means "all active orders" — cancelled hides by default
+  }
+  return o.status === currentStatusFilter && matchesSearch;
+});
+    const list = document.getElementById('orderList');
+    if(filtered.length === 0){
+      list.innerHTML = '<div class="empty">No orders match.</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(o => `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <div class="order-ref">${o.order_ref}</div>
+            <div class="order-date">${new Date(o.created_at).toLocaleString('en-GB')}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="order-total">£${Number(o.total).toFixed(2)}</div>
+            <span class="badge ${o.status}">${o.status.replace('_',' ')}</span>
+          </div>
+        </div>
+        <div class="order-items">
+  <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line);">
+  <div><b style="color:var(--bone);">${o.customer_name || '—'}</b> · ${o.customer_phone || '—'}</div>
+  <div>${o.customer_email || '—'}</div>
+  <div>${o.delivery_method === 'collection' ? '📍 Local pickup' : `${o.address_line1 || ''}${o.address_line2 ? ', '+o.address_line2 : ''}, ${o.city || ''} ${o.postcode || ''}`}</div>
+  ${o.order_notes ? `<div style="color:var(--bone);margin-top:4px;"><i>Note: ${o.order_notes}</i></div>` : ''}
+</div>
+  </div>
+  ${o.items.map(i => `<div>${i.qty}× ${i.name} — £${(i.price*i.qty).toFixed(2)}</div>`).join('')}
+</div>
+        <div class="order-actions">
+          <button class="action-btn ${o.status==='paid'?'active-state':''}" onclick="updateStatus('${o.id}','paid')">Mark Paid</button>
+          <button class="action-btn ${o.status==='fulfilled'?'active-state':''}" onclick="updateStatus('${o.id}','fulfilled')">Mark Fulfilled</button>
+          <button class="action-btn ${o.status==='cancelled'?'active-state':''}" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function updateStatus(id, status){
+    const { error } = await supabaseClient.from('orders').update({ status }).eq('id', id);
+    if(error){ alert('Failed to update — try again.'); console.error(error); return; }
+    await loadOrders();
+  }
+
+  document.getElementById('statusTabs').addEventListener('click', (e) => {
+    if(!e.target.classList.contains('status-tab')) return;
+    document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    currentStatusFilter = e.target.dataset.status;
+    renderOrders();
+  });
+
+  document.getElementById('searchInput').addEventListener('input', renderOrders);
+
+  checkSession();
+</script>
+</body>
+</html>
