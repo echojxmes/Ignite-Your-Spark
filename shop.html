@@ -142,13 +142,19 @@
   .btn-primary:hover{background:var(--crimson-2);}
   .btn-primary:active{transform:scale(.97);}
 
-  @media (max-width:900px){
-    .shop-layout{grid-template-columns:1fr;}
-    .filters{position:fixed;top:0;left:0;height:100%;width:min(320px,85vw);z-index:110;transform:translateX(-105%);transition:transform .3s ease;border-radius:0;overflow-y:auto;}
-    .filters.open{transform:translateX(0);}
-    .filter-toggle{display:inline-block;}
-    .pm-body{grid-template-columns:1fr;}
-  }
+ .filters-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:105;}
+.filters-overlay.open{display:block;}
+.filters-close{display:none;}
+
+@media (max-width:900px){
+  .shop-layout{grid-template-columns:1fr;}
+  .filters{position:fixed;top:0;left:0;height:100%;width:min(320px,85vw);z-index:110;transform:translateX(-105%);transition:transform .3s ease;border-radius:0;overflow-y:auto;padding-top:60px;}
+  .filters.open{transform:translateX(0);}
+  .filter-toggle{display:inline-block;}
+  .filters-close{display:block;position:absolute;top:16px;right:16px;font-size:24px;color:var(--bone-dim);}
+  .filters-close:hover{color:var(--bone);}
+  .pm-body{grid-template-columns:1fr;}
+}
   @media (max-width:760px){
     .foot-grid{grid-template-columns:1fr;}
   }
@@ -176,7 +182,8 @@
 
 <div class="wrap shop-layout">
   <aside class="filters" id="filters">
-    <h3>Filters</h3>
+  <button class="filters-close" onclick="toggleFilters()">&times;</button>
+  <h3>Filters</h3>
     <div class="filter-group" id="categoryFilters"></div>
     <div class="filter-group">
       <h3 style="margin-bottom:10px;">Price</h3>
@@ -188,6 +195,7 @@
     </div>
     <button class="clear-filters" onclick="clearFilters()">Clear all filters</button>
   </aside>
+  <div class="filters-overlay" id="filtersOverlay" onclick="toggleFilters()"></div>
 
   <main>
     <div class="toolbar">
@@ -282,7 +290,7 @@
       return;
     }
 
-    PRODUCTS = data.map(p => ({ id:p.id, name:p.name, price:Number(p.price), tag:p.tag, desc:p.description }));
+    PRODUCTS = data.map(p => ({ id:p.id, name:p.name, price:Number(p.price), tag:p.tag, desc:p.description, sizes:p.sizes || null }));
     CATEGORIES = [...new Set(PRODUCTS.map(p=>p.tag))];
     activeCategories = new Set(CATEGORIES);
 
@@ -291,29 +299,25 @@
   }
 
   function getCart(){ try{ return JSON.parse(localStorage.getItem('iys_cart')) || []; }catch(e){ return []; } }
-  function setCart(c){ localStorage.setItem('iys_cart', JSON.stringify(c)); renderCart(); }
-  function cartTotal(){ return getCart().reduce((s,i)=>s+i.price*i.qty,0); }
+function setCart(c){ localStorage.setItem('iys_cart', JSON.stringify(c)); renderCart(); }
+function cartTotal(){ return getCart().reduce((s,i)=>s+i.price*i.qty,0); }
+function cartKey(id, size){ return id + '::' + (size || 'onesize'); }
 
-  function bumpCartCount(){
-    const el = document.getElementById('cartCount');
-    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
-  }
-
-  function addToCart(id, qty=1){
-    const cart = getCart();
-    const existing = cart.find(i=>i.id===id);
-    if(existing){ existing.qty += qty; } else { cart.push({...PRODUCTS.find(p=>p.id===id), qty}); }
-    setCart(cart); bumpCartCount(); openCart();
-  }
-  function changeQty(id, delta){
-    const cart = getCart();
-    const item = cart.find(i=>i.id===id);
-    if(!item) return;
-    item.qty += delta;
-    setCart(item.qty<=0 ? cart.filter(i=>i.id!==id) : cart);
-  }
-  function removeItem(id){ setCart(getCart().filter(i=>i.id!==id)); }
-
+function addToCart(id, size, qty=1){
+  const cart = getCart();
+  const key = cartKey(id, size);
+  const existing = cart.find(i=>cartKey(i.id,i.size)===key);
+  if(existing){ existing.qty += qty; } else { cart.push({...PRODUCTS.find(p=>p.id===id), size: size||null, qty}); }
+  setCart(cart); bumpCartCount(); openCart();
+}
+function changeQty(key, delta){
+  const cart = getCart();
+  const item = cart.find(i=>cartKey(i.id,i.size)===key);
+  if(!item) return;
+  item.qty += delta;
+  setCart(item.qty<=0 ? cart.filter(i=>cartKey(i.id,i.size)!==key) : cart);
+}
+function removeItem(key){ setCart(getCart().filter(i=>cartKey(i.id,i.size)!==key)); }
   function renderCart(){
     const cart = getCart();
     document.getElementById('cartCount').textContent = cart.reduce((n,i)=>n+i.qty,0);
@@ -327,18 +331,18 @@
     }
     btn.style.opacity='1'; btn.style.pointerEvents='auto';
     container.innerHTML = cart.map((i,idx)=>`
-      <div class="cart-item" style="animation-delay:${idx*0.04}s">
-        <div class="cart-item-art"></div>
-        <div class="cart-item-info">
-          <h4>${i.name}</h4><div class="mono">£${i.price.toFixed(2)}</div>
-          <div class="qty-row">
-            <button class="qty-btn" onclick="changeQty('${i.id}',-1)">&minus;</button>
-            <span class="mono">${i.qty}</span>
-            <button class="qty-btn" onclick="changeQty('${i.id}',1)">+</button>
-            <button class="remove-btn" onclick="removeItem('${i.id}')">Remove</button>
-          </div>
-        </div>
-      </div>`).join('');
+  <div class="cart-item" style="animation-delay:${idx*0.04}s">
+    <div class="cart-item-art"></div>
+    <div class="cart-item-info">
+      <h4>${i.name}${i.size ? ` — Size ${i.size}` : ''}</h4><div class="mono">£${i.price.toFixed(2)}</div>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeQty('${cartKey(i.id,i.size)}',-1)">&minus;</button>
+        <span class="mono">${i.qty}</span>
+        <button class="qty-btn" onclick="changeQty('${cartKey(i.id,i.size)}',1)">+</button>
+        <button class="remove-btn" onclick="removeItem('${cartKey(i.id,i.size)}')">Remove</button>
+      </div>
+    </div>
+  </div>`).join('');
   }
   function openCart(){ document.getElementById('drawer').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); }
   function closeCart(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
@@ -362,7 +366,10 @@
   }
   document.getElementById('minPrice').addEventListener('input', renderProducts);
   document.getElementById('maxPrice').addEventListener('input', renderProducts);
-  function toggleFilters(){ document.getElementById('filters').classList.toggle('open'); }
+  function toggleFilters(){
+  document.getElementById('filters').classList.toggle('open');
+  document.getElementById('filtersOverlay').classList.toggle('open');
+}
 
   function renderProducts(){
     const grid = document.getElementById('productGrid');
