@@ -343,30 +343,11 @@
   function openCart(){ document.getElementById('drawer').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); }
   function closeCart(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 
-  async function goToPayment(){
-    const cart = getCart();
-    if(!cart.length) return;
-
-    const ref = 'IYS-' + Math.floor(1000 + Math.random()*9000);
-    const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-
-    const { error } = await supabaseClient.from('orders').insert({
-      order_ref: ref,
-      items: cart,
-      total: total,
-      status: 'pending'
-    });
-
-    if(error){
-      console.error('Failed to save order:', error);
-      alert('Something went wrong saving your order — please try again.');
-      return;
-    }
-
-    localStorage.setItem('iys_pending_ref', ref);
-    window.location.href = 'payment.html';
-  }
-
+ function goToPayment(){
+  if(!getCart().length) return;
+  window.location.href = 'payment.html';
+}
+  
   function buildCategoryFilters(){
     document.getElementById('categoryFilters').innerHTML =
       '<h3 style="margin-bottom:10px;">Category</h3>' +
