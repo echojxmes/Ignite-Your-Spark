@@ -386,16 +386,30 @@ function removeItem(key){ setCart(getCart().filter(i=>cartKey(i.id,i.size)!==key
 
       document.getElementById('resultCount').textContent = `${items.length} product${items.length!==1?'s':''}`;
       grid.innerHTML = items.length ? items.map((p,idx)=>`
-        <div class="card" style="animation-delay:${idx*0.05}s" onclick="openProduct('${p.id}')">
-          <div class="card-art"><span class="card-tag">${p.tag}</span><div class="card-glyph">${p.name}</div></div>
-          <div class="card-body">
-            <h3>${p.name}</h3><div class="card-desc">${p.desc}</div>
-            <div class="card-foot">
-              <span class="price">£${p.price.toFixed(2)}</span>
-              <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.id}')">Add to Cart</button>
-            </div>
-          </div>
-        </div>`).join('') : '<div class="empty-state">No products match your filters.</div>';
+  <div class="card" style="animation-delay:${idx*0.05}s" onclick="openProduct('${p.id}')">
+    <div class="card-art"><span class="card-tag">${p.tag}</span><div class="card-glyph">${p.name}</div></div>
+    <div class="card-body">
+      <h3>${p.name}</h3><div class="card-desc">${p.desc}</div>
+      ${p.sizes ? `
+        <select class="size-select" id="size-${p.id}" onclick="event.stopPropagation()" style="width:100%;margin-top:10px;background:var(--ink);border:1px solid var(--line);border-radius:6px;color:var(--bone);padding:8px;font-size:12.5px;">
+          <option value="">Select size</option>
+          ${p.sizes.map(s=>`<option value="${s}">${s}</option>`).join('')}
+        </select>` : ''}
+      <div class="card-foot">
+        <span class="price">£${p.price.toFixed(2)}</span>
+        function addFromCard(id){
+  const product = PRODUCTS.find(p=>p.id===id);
+  if(product.sizes){
+    const select = document.getElementById('size-'+id);
+    if(!select.value){ select.style.borderColor = 'var(--crimson)'; return; }
+    addToCart(id, select.value);
+  } else {
+    addToCart(id, null);
+  }
+}
+      </div>
+    </div>
+  </div>`).join('') : '<div class="empty-state">No products match your filters.</div>';
 
       grid.style.transition = 'opacity .25s ease';
       grid.style.opacity = '1';
