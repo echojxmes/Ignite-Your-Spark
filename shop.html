@@ -471,7 +471,7 @@
     closeProduct();
   }
 
-  loadProducts(); renderCart();
+  loadProducts(); renderCart(); if(new URLSearchParams(location.search).get('cart') === '1') openCart();
 </script>
 </body>
 </html>
