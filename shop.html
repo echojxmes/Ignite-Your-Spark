@@ -145,18 +145,22 @@
   .btn-primary:hover{background:var(--crimson-2);}
   .btn-primary:active{transform:scale(.97);}
 
-  .filters-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:105;}
+    .filters-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:105;}
   .filters-overlay.open{display:block;}
   .filters-close{display:none;}
+  @keyframes filtersSlide{from{transform:translateX(-100%);}to{transform:translateX(0);}}
 
   @media (max-width:900px){
     .shop-layout{grid-template-columns:1fr;}
-    .filters{position:fixed;top:0;left:0;height:100%;width:min(320px,85vw);z-index:110;transform:translateX(-105%);transition:transform .3s ease;border-radius:0;overflow-y:auto;padding-top:60px;}
-    .filters.open{transform:translateX(0);}
+    .filters{display:none;position:fixed;top:0;left:0;height:100%;width:min(320px,85vw);z-index:110;border-radius:0;overflow-y:auto;padding-top:60px;animation:none;}
+    .filters.open{display:block;animation:filtersSlide .3s ease both;}
     .filter-toggle{display:inline-block;}
     .filters-close{display:block;position:absolute;top:16px;right:16px;font-size:24px;color:var(--bone-dim);}
     .filters-close:hover{color:var(--bone);}
     .pm-body{grid-template-columns:1fr;}
+  }
+  @media (min-width:901px){
+    .filters-overlay{display:none !important;}
   }
   @media (max-width:760px){
     .foot-grid{grid-template-columns:1fr;}
@@ -301,7 +305,7 @@
     renderProducts();
   }
 
-  function getCart(){ try{ return JSON.parse(localStorage.getItem('iys_cart')) || []; }catch(e){ return []; } }
+  function getCart(){ try{ return JSON.parse(localStorage.ggetItem('iys_cart')) || []; }catch(e){ return []; } }
   function setCart(c){ localStorage.setItem('iys_cart', JSON.stringify(c)); renderCart(); }
   function cartTotal(){ return getCart().reduce((s,i)=>s+i.price*i.qty,0); }
   function cartKey(id, size){ return id + '::' + (size || 'onesize'); }
@@ -375,9 +379,10 @@
   }
   document.getElementById('minPrice').addEventListener('input', renderProducts);
   document.getElementById('maxPrice').addEventListener('input', renderProducts);
-  function toggleFilters(){
-    document.getElementById('filters').classList.toggle('open');
-    document.getElementById('filtersOverlay').classList.toggle('open');
+    function toggleFilters(){
+    const open = document.getElementById('filters').classList.toggle('open');
+    document.getElementById('filtersOverlay').classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
   }
 
   function renderProducts(){
