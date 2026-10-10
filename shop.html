@@ -307,7 +307,15 @@
     renderProducts();
   }
 
-  function getCart(){ try{ return JSON.parse(localStorage.ggetItem('iys_cart')) || []; }catch(e){ return []; } }
+  
+function getCart() {
+  try {
+    return JSON.parse(localStorage.getItem('iys_cart')) || [];
+  } catch (e) {
+    console.error("Failed to load Iyssport cart:", e);
+    return [];
+  }
+}
   function setCart(c){ localStorage.setItem('iys_cart', JSON.stringify(c)); renderCart(); }
   function cartTotal(){ return getCart().reduce((s,i)=>s+i.price*i.qty,0); }
   function cartKey(id, size){ return id + '::' + (size || 'onesize'); }
