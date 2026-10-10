@@ -13,7 +13,8 @@
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet"
     >
-
+<link rel="icon" type="image/png" href="/iysblack.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" href="/iyswhite.png" media="(prefers-color-scheme: dark)">
     <style>
         :root {
             --ink: #0a0b0d;
@@ -947,6 +948,22 @@
         }
     </style>
 </head>
+
+<script>
+  function syncCartBadge(){
+    try{
+      const cart = JSON.parse(localStorage.getItem('iys_cart')) || [];
+      const count = cart.reduce((n,i)=>n+i.qty,0);
+      const el = document.getElementById('cartCount');
+      if(el) el.textContent = count;
+    }catch(e){}
+  }
+  syncCartBadge();
+  window.addEventListener('pageshow', syncCartBadge); // also updates when you hit the back button
+
+  // those pages have no cart drawer, so the cart button takes you to the shop's drawer instead
+  function openCart(){ window.location.href = 'shop.html?cart=1'; }
+</script>
 
 <body>
 
